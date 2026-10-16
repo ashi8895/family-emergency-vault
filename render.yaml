@@ -4,7 +4,7 @@ services:
   - type: web
     name: fev-api
     runtime: node
-     plan:free
+    plan: free
     rootDir: apps/server
     buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
