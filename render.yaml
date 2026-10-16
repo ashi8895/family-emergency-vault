@@ -1,0 +1,48 @@
+# Render Blueprint (optional). Check the current Render docs before using; field names can change.
+# Replace "fev-api" with a unique name, and use the same name in the rewrite rule below.
+services:
+  - type: web
+    name: fev-api
+    runtime: node
+    rootDir: apps/server
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: STORAGE
+        value: gridfs
+      - key: TRUST_PROXY
+        value: "1"
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: PRELOGIN_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        sync: false # the public URL of the web app, for example https://fev-web.onrender.com
+      - key: SMTP_URL
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+
+  - type: web
+    name: fev-web
+    runtime: static
+    rootDir: apps/web
+    buildCommand: npm install --include=dev && npm run build
+    staticPublishPath: dist
+    routes:
+      # Same-origin API: the browser talks to /api on the web URL and Render forwards it.
+      # This keeps the SameSite=Strict refresh cookie working.
+      - type: rewrite
+        source: /api/*
+        destination: https://fev-api.onrender.com/api/*
+      # Single-page app: /invite/..., /approve/..., /access/... must all serve index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html

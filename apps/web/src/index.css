@@ -1,0 +1,392 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --c-ink: 15 31 27;
+    --c-paper: 238 242 239;
+    --c-line: 211 221 216;
+    --c-muted: 83 99 93;
+    --c-seal: 31 92 78;
+    --c-seal-dark: 18 59 50;
+    --c-seal-tint: 225 239 234;
+    --c-seal-glow: 62 156 133;
+    --c-vault: 14 47 40;
+    --c-vault-deep: 10 35 30;
+    --c-vault-rim: 27 74 64;
+    --c-brass: 138 95 15;
+    --c-brass-bright: 201 150 45;
+    --c-brass-tint: 246 235 211;
+    --c-sindoor: 180 43 35;
+    --c-sindoor-tint: 251 228 225;
+  }
+  html[data-theme="midnight"] {
+    --c-ink: 15 27 45;
+    --c-paper: 238 241 246;
+    --c-line: 211 218 230;
+    --c-muted: 85 98 122;
+    --c-seal: 44 79 138;
+    --c-seal-dark: 27 53 102;
+    --c-seal-tint: 227 234 246;
+    --c-seal-glow: 92 139 214;
+    --c-vault: 14 27 51;
+    --c-vault-deep: 10 20 38;
+    --c-vault-rim: 29 51 88;
+  }
+  html[data-theme="peacock"] {
+    --c-ink: 12 31 35;
+    --c-paper: 237 243 244;
+    --c-line: 208 221 224;
+    --c-muted: 79 99 104;
+    --c-seal: 15 107 122;
+    --c-seal-dark: 10 74 85;
+    --c-seal-tint: 221 241 244;
+    --c-seal-glow: 53 167 184;
+    --c-vault: 10 47 54;
+    --c-vault-deep: 7 35 40;
+    --c-vault-rim: 20 80 90;
+  }
+  html[data-theme="charcoal"] {
+    --c-ink: 20 23 28;
+    --c-paper: 241 242 244;
+    --c-line: 216 219 224;
+    --c-muted: 90 98 112;
+    --c-seal: 59 68 82;
+    --c-seal-dark: 38 44 54;
+    --c-seal-tint: 230 233 238;
+    --c-seal-glow: 124 135 152;
+    --c-vault: 26 31 39;
+    --c-vault-deep: 18 22 28;
+    --c-vault-rim: 42 49 60;
+  }
+  html {
+    font-size: 17px;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+  /* tight tracking suits Latin display type but would crowd Devanagari, so only for English */
+  html[lang="en"] h1 {
+    letter-spacing: -0.025em;
+  }
+  html[lang="en"] h2 {
+    letter-spacing: -0.015em;
+  }
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-brass-bright;
+  }
+  ::selection {
+    background: rgb(201 150 45 / 0.35);
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-base text-ink transition-[border-color,box-shadow] duration-200 placeholder:text-muted/60 focus:border-seal focus:outline-none focus:ring-4 focus:ring-seal/15;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold transition duration-200 ease-out active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  /* a pressed-metal edge instead of a soft shadow */
+  .btn-primary {
+    @apply btn bg-seal text-white hover:bg-seal-dark;
+    box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.25);
+  }
+  .btn-brass {
+    @apply btn bg-brass-bright text-vault-deep hover:bg-brass-bright/90;
+    box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.2);
+  }
+  .btn-quiet {
+    @apply btn border border-line bg-white text-ink hover:border-seal hover:text-seal-dark;
+  }
+  .btn-danger {
+    @apply btn border border-sindoor/35 bg-white text-sindoor hover:bg-sindoor hover:text-white;
+  }
+
+  /* surfaces: outlined by default, filled only for the one thing that matters on a screen */
+  .panel {
+    @apply rounded-xl border border-line bg-white;
+  }
+  .panel-vault {
+    @apply rounded-xl bg-vault text-white;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-line/70;
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.65),
+      transparent
+    );
+    animation: shimmer 1.4s infinite;
+  }
+
+  /* header tabs: a brass rule slides under the current one */
+  .tab {
+    @apply relative px-1 py-4 font-semibold text-white/65 transition-colors duration-200 hover:text-white;
+  }
+  .tab::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: rgb(var(--c-brass-bright));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .tab[aria-current="page"] {
+    @apply text-white;
+  }
+  .tab[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+
+  /* the only entrance animation in the app: switching tabs */
+  .tab-pane {
+    animation: pane-in 0.22s var(--ease-out) both;
+  }
+  .toast-in {
+    animation: toast-in 0.28s var(--ease-out) both;
+  }
+  .dialog-in {
+    animation: dialog-in 0.2s var(--ease-out) both;
+  }
+  .dialog-backdrop {
+    animation: fade-in 0.2s ease-out both;
+  }
+
+  /* height animates open and closed without measuring: grid rows 0fr to 1fr */
+  .collapse-grid {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 0.28s var(--ease-out),
+      opacity 0.2s ease-out;
+  }
+  .collapse-grid[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+/* ---------------------------------------------------------------- animations */
+/* each page gets its own soft background; the colour glides when you switch pages */
+.app-shell {
+  background-color: var(--page-bg, rgb(var(--c-paper)));
+  transition: background-color 0.6s var(--ease-out);
+}
+.app-shell[data-page="people"] {
+  --page-bg: color-mix(
+    in srgb,
+    rgb(var(--c-paper)) 88%,
+    rgb(var(--c-seal-glow))
+  );
+}
+.app-shell[data-page="switch"] {
+  --page-bg: color-mix(
+    in srgb,
+    rgb(var(--c-paper)) 86%,
+    rgb(var(--c-brass-bright))
+  );
+}
+.app-shell[data-page="security"] {
+  --page-bg: color-mix(
+    in srgb,
+    rgb(var(--c-paper)) 90%,
+    rgb(var(--c-vault-rim))
+  );
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes pane-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    transform: rotate(calc(var(--i) * 120deg)) translateY(0);
+  }
+  50% {
+    transform: rotate(calc(var(--i) * 120deg)) translateY(-5%);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- the tijori dial (landing page) */
+/* never wider than its parent: the parent decides the size on small screens */
+.dial {
+  position: relative;
+  width: min(var(--size, 320px), 100%);
+  aspect-ratio: 1;
+}
+.dial > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dial-outer,
+.dial-inner,
+.dial-piece {
+  will-change: transform;
+}
+.dial-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+
+/* hero: turns on its own, slowly */
+.dial[data-mode="auto"] .dial-outer {
+  animation: spin 160s linear infinite;
+}
+.dial[data-mode="auto"] .dial-inner {
+  animation: spin 100s linear infinite reverse;
+}
+.dial[data-mode="auto"] .dial-piece {
+  animation: breathe 9s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -3s);
+}
+
+/* story: turns as you scroll. --p is scroll progress 0..1, --d is how far the key pieces are apart 0..1 */
+.dial[data-mode="scroll"] .dial-outer {
+  transform: rotate(calc(var(--p, 0) * 320deg));
+}
+.dial[data-mode="scroll"] .dial-inner {
+  transform: rotate(calc(var(--p, 0) * -240deg));
+}
+.dial[data-mode="scroll"] .dial-piece {
+  transform: rotate(calc(var(--i) * 120deg))
+    translateY(calc(var(--d, 0) * -24%));
+}
+.dial[data-step="2"] .dial-pulse {
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+.story-step {
+  opacity: 0.4;
+  transition: opacity 0.35s var(--ease-out);
+}
+.story-step[data-active="true"] {
+  opacity: 1;
+}
+.story-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s var(--ease-out);
+}
+.story-step[data-active="true"] .story-body {
+  grid-template-rows: 1fr;
+}
+.story-body > div {
+  overflow: hidden;
+}
+
+/* the Appearance menu sets data-motion="reduced" (it starts from the OS setting) */
+html[data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .dial[data-mode="auto"] .dial-outer,
+  .dial[data-mode="auto"] .dial-inner,
+  .dial[data-mode="auto"] .dial-piece,
+  .dial[data-step="2"] .dial-pulse,
+  .tab-pane,
+  .toast-in,
+  .dialog-in,
+  .dialog-backdrop,
+  .skeleton::after {
+    animation: none !important;
+  }
+  .tab::after,
+  .story-step,
+  .story-body,
+  .collapse-grid {
+    transition: none;
+  }
+}

@@ -1,0 +1,13 @@
+flowchart TB
+  PW["Master password"] -->|"PBKDF2, 600,000 rounds, salt"| M["256-bit master secret"]
+  M -->|"HKDF label 'auth'"| AK["authKey<br/>sent to server, hashed again with scrypt"]
+  M -->|"HKDF label 'enc'"| KEK["KEK<br/>never leaves the browser"]
+  VK["Vault key<br/>random 256-bit"] -->|"AES-GCM wrap with KEK"| WVK["wrapped vault key<br/>stored on server"]
+  KEK --> WVK
+  VK -->|"AES-GCM per field, AAD = field name"| ITEMS["items and files<br/>ciphertext on server"]
+  VK -->|"Shamir k-of-n"| SH["key pieces"]
+  SH -->|"RSA-OAEP to each person's public key"| ES["encrypted pieces<br/>stored on server"]
+  classDef browser fill:#E3F1EC,stroke:#1E6B57,color:#172033;
+  classDef server fill:#FBF1DF,stroke:#A4660E,color:#172033;
+  class PW,M,KEK,VK,SH browser;
+  class AK,WVK,ITEMS,ES server;

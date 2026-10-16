@@ -1,0 +1,31 @@
+flowchart LR
+  subgraph B1["Owner's browser (trusted)"]
+    direction TB
+    O1["Master password<br/>PBKDF2, then HKDF"]
+    O2["Vault key<br/>AES-256-GCM"]
+    O3["Shamir split<br/>+ RSA wrap per person"]
+  end
+  subgraph B2["Trusted person's browser (trusted)"]
+    direction TB
+    C1["Passphrase<br/>unlocks private key"]
+    C2["Key piece codes<br/>rebuild vault key"]
+  end
+  subgraph S["Server (not trusted: sees ciphertext only)"]
+    direction TB
+    API["Express API<br/>auth, vault, contacts,<br/>safety switch, access, audit"]
+    SCH["Scheduler<br/>check-ins, reminders,<br/>waiting period"]
+    NOTIF["Notifier<br/>email or console"]
+  end
+  DB[("MongoDB<br/>ciphertext, hashes,<br/>audit hash chain")]
+  FS[("Encrypted files<br/>disk or GridFS")]
+  MAIL["Email to owner<br/>and trusted people"]
+  B1 -- "ciphertext, wrapped key" --> API
+  B2 -- "signed link, ciphertext" --> API
+  API --> DB
+  API --> FS
+  SCH --> DB
+  SCH --> NOTIF --> MAIL
+  classDef trusted fill:#E3F1EC,stroke:#1E6B57,color:#172033;
+  classDef untrusted fill:#FBF1DF,stroke:#A4660E,color:#172033;
+  class O1,O2,O3,C1,C2 trusted;
+  class API,SCH,NOTIF,DB,FS untrusted;

@@ -1,0 +1,12 @@
+{
+  "name": "family-emergency-vault",
+  "private": true,
+  "description": "Zero-knowledge vault that tells your family where everything is, with a dead-man's switch and Shamir-shared emergency access.",
+  "scripts": {
+    "install:all": "npm --prefix apps/server install && npm --prefix apps/web install",
+    "test": "npm --prefix apps/server test && npm --prefix apps/web test",
+    "typecheck": "npm --prefix apps/server run typecheck && npm --prefix apps/web run typecheck",
+    "dev:server": "npm --prefix apps/server run dev",
+    "dev:web": "npm --prefix apps/web run dev"
+  }
+}

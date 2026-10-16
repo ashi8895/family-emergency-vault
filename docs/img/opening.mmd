@@ -1,0 +1,21 @@
+sequenceDiagram
+  autonumber
+  participant O as Owner's browser
+  participant S as Server
+  participant A as Trusted person A
+  participant B as Trusted person B
+  Note over O,S: Setup (once)
+  A->>S: accept invite: public key + private key encrypted with A's passphrase
+  O->>O: split vault key into pieces (k of n)
+  O->>S: each piece encrypted to that person's public key + key check
+  Note over S: Owner stops answering check-ins
+  S->>A: email: please approve
+  S->>B: email: please approve
+  A->>S: approve (button, not a GET)
+  B->>S: approve
+  Note over S: waiting period, owner can still stop it
+  S->>A: email: vault is open (access link)
+  A->>S: fetch my encrypted piece + ciphertext items
+  A->>A: passphrase unlocks piece, shown as a code
+  B->>B: same, then reads the code to A
+  A->>A: combine pieces, key check passes, decrypt items
